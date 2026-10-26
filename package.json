@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "lucide-react": "^1.59.0",
+    "mssql": "^12.7.10",
+    "recharts": "^3.10.1",
+    "socket.io": "^4.8.4",
+    "socket.io-client": "^4.8.4"
+  }
+}
