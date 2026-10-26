@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import SelectorEvento from "@/components/layout/SelectorEvento";
-import GraficaCircular from "@/components/comida/GraficaCircular";
-import GraficaCostos from "@/components/comida/GraficaCostos";
+import GraficaCircular from "@/components/comida/Consumo/GraficaCircular";
+import GraficaCostos from "@/components/comida/Costos/GraficaCostos";
 
 const RESUMEN_VACIO = {
   trabajadores: { servicios: [], total: 0 },

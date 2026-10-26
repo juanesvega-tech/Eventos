@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import GraficaPersonas from "@/components/dashboard/GraficaPersonas";
+import GraficaPersonas from "@/components/dashboard/RegistroPersonas/GraficaPersonas";
 
 import * as XLSX from "xlsx";
 
@@ -166,15 +166,19 @@ export default function ContadorPersonas({ programacionNro }) {
       }
 
       const filas = personas.map((persona) => ({
-        Tipo: persona.tipo,
-        Documento: persona.documento,
-        Nombre: persona.nombre,
+        RegistrosEventoNro: persona.RegistrosEventoNro,
+        "Documento PRINCIPAL": persona.PrincipalDocumento,
+        "Nombre PRINCIPAL": persona.PrincipalNombre,
+        "Documento INVITADO": persona.InvitadoDocumento,
+        "Nombre INVITADO": persona.InvitadoNombre,
       }));
-
+      
       const hoja = XLSX.utils.json_to_sheet(filas);
 
       hoja["!cols"] = [
-        { wch: 18 },
+        { wch: 20 },
+        { wch: 25 },
+        { wch: 40 },
         { wch: 25 },
         { wch: 40 },
       ];

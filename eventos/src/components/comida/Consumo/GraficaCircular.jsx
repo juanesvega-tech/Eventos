@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import ModalDetalleComida from "@/components/comida/ModalDetalleComida";
+import ModalDetalleComida from "@/components/comida/Modal/ModalDetalleComida";
 
 const COLORES = [
   "#2563eb",

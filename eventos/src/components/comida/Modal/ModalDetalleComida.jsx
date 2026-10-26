@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import * as XLSX from "xlsx";
-import GraficaBarras from "@/components/comida/GraficaBarras";
+import GraficaBarras from "@/components/comida/Modal/GraficaBarras";
 
 function formatearFecha(fecha) {
   if (!fecha) return "";

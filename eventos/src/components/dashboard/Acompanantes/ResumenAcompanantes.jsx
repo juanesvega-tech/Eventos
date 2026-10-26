@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import GraficaAcompanantes from "@/components/dashboard/GraficaAcompanantes";
+import GraficaAcompanantes from "@/components/dashboard/Acompanantes/GraficaAcompanantes";
 
 export default function ResumenAcompanantes({ programacionNro }) {
   const [datos, setDatos] = useState({

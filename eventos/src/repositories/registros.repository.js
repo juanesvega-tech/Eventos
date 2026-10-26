@@ -47,6 +47,7 @@ export async function obtenerDetalleRegistros(programacionNro) {
     .query(`
       ;WITH Principales AS (
         SELECT
+          r.RegistrosEventoNro,
           LTRIM(RTRIM(r.PersonasDocumento)) AS Documento,
           MAX(LTRIM(RTRIM(p.PersonasNombresComp))) AS Nombre
         FROM dbo.RegistrosEvento AS r
@@ -55,10 +56,13 @@ export async function obtenerDetalleRegistros(programacionNro) {
              LTRIM(RTRIM(r.PersonasDocumento))
         WHERE r.ProgramacionNro = @ProgramacionNro
           AND LTRIM(RTRIM(r.PersonasDocumento)) <> ''
-        GROUP BY LTRIM(RTRIM(r.PersonasDocumento))
+        GROUP BY
+          r.RegistrosEventoNro,
+          LTRIM(RTRIM(r.PersonasDocumento))
       ),
       Acompanantes AS (
         SELECT
+          a.RegistrosEventoNro,
           LTRIM(RTRIM(a.RegistrosAcompDocum)) AS Documento,
           MAX(LTRIM(RTRIM(a.RegistrosAcompNombre))) AS Nombre
         FROM dbo.RegistrosEventoAcomp AS a
@@ -66,28 +70,36 @@ export async function obtenerDetalleRegistros(programacionNro) {
           ON r.RegistrosEventoNro = a.RegistrosEventoNro
         WHERE r.ProgramacionNro = @ProgramacionNro
           AND LTRIM(RTRIM(a.RegistrosAcompDocum)) <> ''
-        GROUP BY LTRIM(RTRIM(a.RegistrosAcompDocum))
+        GROUP BY
+          a.RegistrosEventoNro,
+          LTRIM(RTRIM(a.RegistrosAcompDocum))
       )
       SELECT
-        'PRINCIPAL' AS Tipo,
-        Documento,
-        COALESCE(Nombre, '') AS Nombre
-      FROM Principales
+        p.RegistrosEventoNro,
+        p.Documento AS PrincipalDocumento,
+        p.Nombre AS PrincipalNombre,
+        a.Documento AS InvitadoDocumento,
+        a.Nombre AS InvitadoNombre
+      FROM Principales p
+      LEFT JOIN Acompanantes a
+        ON a.RegistrosEventoNro = p.RegistrosEventoNro
 
       UNION ALL
 
       SELECT
-        'INVITADO' AS Tipo,
-        Documento,
-        COALESCE(Nombre, '') AS Nombre
-      FROM Acompanantes
-
-      ORDER BY Nombre, Documento;
+        a.RegistrosEventoNro,
+        '' AS PrincipalDocumento,
+        '' AS PrincipalNombre,
+        a.Documento AS InvitadoDocumento,
+        a.Nombre AS InvitadoNombre
+      FROM Acompanantes a
+      WHERE NOT EXISTS (
+        SELECT 1
+        FROM Principales p
+        WHERE p.RegistrosEventoNro = a.RegistrosEventoNro
+      )
+      ORDER BY RegistrosEventoNro;
     `);
 
-  return resultado.recordset.map((fila) => ({
-    tipo: fila.Tipo,
-    documento: fila.Documento,
-    nombre: fila.Nombre,
-  }));
+  return resultado.recordset;
 }

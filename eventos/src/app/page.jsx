@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import SelectorEvento from "@/components/layout/SelectorEvento";
-import ContadorPersonas from "@/components/dashboard/ContadorPersonas";
-import ResumenAcompanantes from "@/components/dashboard/ResumenAcompanantes";
+import ContadorPersonas from "@/components/dashboard/RegistroPersonas/ContadorPersonas";
+import ResumenAcompanantes from "@/components/dashboard/Acompanantes/ResumenAcompanantes";
 
 import Image from "next/image";
 
