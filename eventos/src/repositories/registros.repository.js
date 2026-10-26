@@ -43,41 +43,51 @@ export async function obtenerDetalleRegistros(programacionNro) {
 
   const resultado = await pool
     .request()
-    .input(
-      "ProgramacionNro",
-      sql.Decimal(18, 0),
-      Number(programacionNro)
-    )
+    .input("ProgramacionNro", sql.Decimal(18, 0), Number(programacionNro))
     .query(`
+      ;WITH Principales AS (
+        SELECT
+          LTRIM(RTRIM(r.PersonasDocumento)) AS Documento,
+          MAX(LTRIM(RTRIM(p.PersonasNombresComp))) AS Nombre
+        FROM dbo.RegistrosEvento AS r
+        LEFT JOIN dbo.Personas AS p
+          ON LTRIM(RTRIM(p.PersonasDocumento)) =
+             LTRIM(RTRIM(r.PersonasDocumento))
+        WHERE r.ProgramacionNro = @ProgramacionNro
+          AND LTRIM(RTRIM(r.PersonasDocumento)) <> ''
+        GROUP BY LTRIM(RTRIM(r.PersonasDocumento))
+      ),
+      Acompanantes AS (
+        SELECT
+          LTRIM(RTRIM(a.RegistrosAcompDocum)) AS Documento,
+          MAX(LTRIM(RTRIM(a.RegistrosAcompNombre))) AS Nombre
+        FROM dbo.RegistrosEventoAcomp AS a
+        INNER JOIN dbo.RegistrosEvento AS r
+          ON r.RegistrosEventoNro = a.RegistrosEventoNro
+        WHERE r.ProgramacionNro = @ProgramacionNro
+          AND LTRIM(RTRIM(a.RegistrosAcompDocum)) <> ''
+        GROUP BY LTRIM(RTRIM(a.RegistrosAcompDocum))
+      )
       SELECT
         'PRINCIPAL' AS Tipo,
-        LTRIM(RTRIM(r.PersonasDocumento)) AS Documento,
-        LTRIM(RTRIM(p.PersonasNombresComp)) AS Nombre
-      FROM dbo.RegistrosEvento AS r
-      LEFT JOIN dbo.Personas AS p
-        ON LTRIM(RTRIM(p.PersonasDocumento)) =
-           LTRIM(RTRIM(r.PersonasDocumento))
-      WHERE r.ProgramacionNro = @ProgramacionNro
-        AND LTRIM(RTRIM(r.PersonasDocumento)) <> ''
+        Documento,
+        COALESCE(Nombre, '') AS Nombre
+      FROM Principales
 
       UNION ALL
 
       SELECT
         'INVITADO' AS Tipo,
-        LTRIM(RTRIM(a.RegistrosAcompDocum)) AS Documento,
-        LTRIM(RTRIM(a.RegistrosAcompNombre)) AS Nombre
-      FROM dbo.RegistrosEventoAcomp AS a
-      INNER JOIN dbo.RegistrosEvento AS r
-        ON r.RegistrosEventoNro = a.RegistrosEventoNro
-      WHERE r.ProgramacionNro = @ProgramacionNro
-        AND LTRIM(RTRIM(a.RegistrosAcompDocum)) <> ''
+        Documento,
+        COALESCE(Nombre, '') AS Nombre
+      FROM Acompanantes
 
-      ORDER BY Tipo, Nombre;
+      ORDER BY Nombre, Documento;
     `);
 
   return resultado.recordset.map((fila) => ({
     tipo: fila.Tipo,
     documento: fila.Documento,
-    nombre: fila.Nombre || "",
+    nombre: fila.Nombre,
   }));
 }
