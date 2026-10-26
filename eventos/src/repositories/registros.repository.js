@@ -35,4 +35,49 @@ export async function obtenerConteoRegistros(programacionNro) {
     acompanantes,
     total: invitados + acompanantes,
   };
+  
+}
+
+export async function obtenerDetalleRegistros(programacionNro) {
+  const pool = await getConnection();
+
+  const resultado = await pool
+    .request()
+    .input(
+      "ProgramacionNro",
+      sql.Decimal(18, 0),
+      Number(programacionNro)
+    )
+    .query(`
+      SELECT
+        'PRINCIPAL' AS Tipo,
+        LTRIM(RTRIM(r.PersonasDocumento)) AS Documento,
+        LTRIM(RTRIM(p.PersonasNombresComp)) AS Nombre
+      FROM dbo.RegistrosEvento AS r
+      LEFT JOIN dbo.Personas AS p
+        ON LTRIM(RTRIM(p.PersonasDocumento)) =
+           LTRIM(RTRIM(r.PersonasDocumento))
+      WHERE r.ProgramacionNro = @ProgramacionNro
+        AND LTRIM(RTRIM(r.PersonasDocumento)) <> ''
+
+      UNION ALL
+
+      SELECT
+        'INVITADO' AS Tipo,
+        LTRIM(RTRIM(a.RegistrosAcompDocum)) AS Documento,
+        LTRIM(RTRIM(a.RegistrosAcompNombre)) AS Nombre
+      FROM dbo.RegistrosEventoAcomp AS a
+      INNER JOIN dbo.RegistrosEvento AS r
+        ON r.RegistrosEventoNro = a.RegistrosEventoNro
+      WHERE r.ProgramacionNro = @ProgramacionNro
+        AND LTRIM(RTRIM(a.RegistrosAcompDocum)) <> ''
+
+      ORDER BY Tipo, Nombre;
+    `);
+
+  return resultado.recordset.map((fila) => ({
+    tipo: fila.Tipo,
+    documento: fila.Documento,
+    nombre: fila.Nombre || "",
+  }));
 }

@@ -4,6 +4,8 @@
 import { useEffect, useState } from "react";
 import GraficaPersonas from "@/components/dashboard/GraficaPersonas";
 
+import * as XLSX from "xlsx";
+
 const inicial = {
   invitados: 0,
   acompanantes: 0,
@@ -135,6 +137,61 @@ export default function ContadorPersonas({ programacionNro }) {
     );
   }
 
+  async function exportarExcel() {
+    if (!programacionNro) return;
+
+    try {
+      setError("");
+
+      const respuesta = await fetch(
+        `/api/registros/detalle?programacionNro=${encodeURIComponent(
+          programacionNro
+        )}`,
+        { cache: "no-store" }
+      );
+
+      const resultado = await respuesta.json();
+
+      if (!respuesta.ok || !resultado.success) {
+        throw new Error(
+          resultado.message || "No se pudieron exportar las personas."
+        );
+      }
+
+      const personas = resultado.data || [];
+
+      if (personas.length === 0) {
+        setError("No hay personas para exportar.");
+        return;
+      }
+
+      const filas = personas.map((persona) => ({
+        Tipo: persona.tipo,
+        Documento: persona.documento,
+        Nombre: persona.nombre,
+      }));
+
+      const hoja = XLSX.utils.json_to_sheet(filas);
+
+      hoja["!cols"] = [
+        { wch: 18 },
+        { wch: 25 },
+        { wch: 40 },
+      ];
+
+      const libro = XLSX.utils.book_new();
+
+      XLSX.utils.book_append_sheet(libro, hoja, "Personas");
+
+      XLSX.writeFile(
+        libro,
+        `personas_programacion_${programacionNro}.xlsx`
+      );
+    } catch (err) {
+      setError(err.message || "Error al exportar el Excel.");
+    }
+  }
+
   return (
     <section className="contador-panel">
       <header className="contador-encabezado">
@@ -156,6 +213,14 @@ export default function ContadorPersonas({ programacionNro }) {
           <span className="estado-punto" />
           {error ? "Error de conexión" : "Monitoreo activo"}
         </span>
+
+        <button
+          type="button"
+          onClick={exportarExcel}
+          className="rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-emerald-700 focus:outline-none focus:ring-4 focus:ring-emerald-100"
+        >
+          Exportar Excel
+        </button>
       </header>
 
       {error && (
