@@ -27,8 +27,8 @@ export default function GraficaAcompanantes({
           <span className="etiqueta">ANÁLISIS DE ACOMPAÑANTES</span>
           <h2>Porcentaje de acompañantes</h2>
           <p>
-            Invitados que tienen acompañantes registrados frente
-            a invitados que no tienen.
+            A que tienen acompañantes registrados frente
+            a asistentes que no tienen.
           </p>
         </div>
 
@@ -44,7 +44,7 @@ export default function GraficaAcompanantes({
         >
           <div className="centro">
             <strong>{total > 0 ? "100%" : "0%"}</strong>
-            <span>Invitados analizados</span>
+            <span>Asistentes analizados</span>
           </div>
         </div>
 
@@ -53,7 +53,7 @@ export default function GraficaAcompanantes({
             <span className="punto azul" />
             <div>
               <strong>Con acompañante</strong>
-              <p>{numero(conAcompanante)} invitados</p>
+              <p>{numero(conAcompanante)} asistentes</p>
             </div>
             <b>{porcentajeCon.toFixed(1)}%</b>
           </div>
@@ -62,7 +62,7 @@ export default function GraficaAcompanantes({
             <span className="punto gris" />
             <div>
               <strong>Sin acompañante</strong>
-              <p>{numero(sinAcompanante)} invitados</p>
+              <p>{numero(sinAcompanante)} asistentes</p>
             </div>
             <b>{porcentajeSin.toFixed(1)}%</b>
           </div>
@@ -70,8 +70,8 @@ export default function GraficaAcompanantes({
       </div>
 
       <p className="nota">
-        Los porcentajes se calculan sobre los invitados analizados,
-        no sobre la suma de invitados y acompañantes.
+        Los porcentajes se calculan sobre los asistentes analizados,
+        no sobre la suma de asistentes y acompañantes.
       </p>
 
       <style jsx>{`

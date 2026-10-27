@@ -69,7 +69,7 @@ export default function Home() {
             </h1>
 
             <p className="mt-4 max-w-2xl text-sm leading-6 text-white/65 sm:text-base">
-              Controla los invitados, acompañantes y servicios de cada evento.
+              Controla los Asistentes, acompañantes y servicios de cada evento.
             </p>
           </div>
 

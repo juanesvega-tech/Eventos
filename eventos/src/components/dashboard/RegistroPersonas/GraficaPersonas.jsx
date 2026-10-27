@@ -90,7 +90,7 @@ export default function GraficaPersonas({ historial = [] }) {
           <Line
             type="monotone"
             dataKey="invitados"
-            name="Invitados"
+            name="Asistentes"
             stroke="#2563eb"
             strokeWidth={3}
             dot={false}

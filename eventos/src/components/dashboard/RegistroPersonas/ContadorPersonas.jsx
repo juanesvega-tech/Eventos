@@ -236,11 +236,11 @@ export default function ContadorPersonas({ programacionNro }) {
       <div className="contador-grid">
         <article className="contador-tarjeta invitados">
           <div className="contador-tarjeta-icono">👥</div>
-          <p>Invitados registrados</p>
+          <p>Asistentes registrados</p>
           <strong>
             {formatearNumero(estadisticas.invitados)}
           </strong>
-          <span>Documentos únicos de invitados</span>
+          <span>Documentos únicos de asistentes</span>
         </article>
 
         <article className="contador-tarjeta acompanantes">
@@ -258,7 +258,7 @@ export default function ContadorPersonas({ programacionNro }) {
           <strong>
             {formatearNumero(estadisticas.totalPersonas)}
           </strong>
-          <span>Invitados + acompañantes</span>
+          <span>Asistentes + acompañantes</span>
         </article>
       </div>
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import * as XLSX from "xlsx";
 
 const formatoPesos = (valor) =>
   new Intl.NumberFormat("es-CO", {
@@ -76,6 +77,86 @@ export default function GraficaCostos({ programacionNro }) {
 
   if (!programacionNro) {
     return null;
+  }
+
+  async function exportarExcel() {
+    try {
+      setError("");
+
+      const respuesta = await fetch(
+        `/api/comida/reporte?programacionNro=${encodeURIComponent(
+          programacionNro
+        )}`,
+        { cache: "no-store" }
+      );
+
+      const resultado = await respuesta.json();
+
+      if (!respuesta.ok || !resultado.success) {
+        throw new Error(
+          resultado.message || "No se pudo generar el Excel."
+        );
+      }
+
+      const personas = resultado.data || [];
+
+      if (personas.length === 0) {
+        setError("No hay registros para exportar.");
+        return;
+      }
+
+      const filas = personas.map((persona) => ({
+        "Documento trabajador PRINCIPAL":
+          persona.DocumentoPrincipal,
+        "¿Vino con acompañante?":
+          persona.VinoConAcompanante,
+        "Cantidad de comidas (principal + acompañantes)":
+          Number(persona.CantidadComidas) || 0,
+        "Precio total comidas (principal + acompañantes)":
+          Number(persona.PrecioTotal) || 0,
+      }));
+
+      filas.push({
+        "Documento trabajador PRINCIPAL": "TOTAL GENERAL",
+        "¿Vino con acompañante?": "",
+        "Cantidad de comidas (principal + acompañantes)":
+          personas.reduce(
+            (total, persona) =>
+              total + (Number(persona.CantidadComidas) || 0),
+            0
+          ),
+        "Precio total comidas (principal + acompañantes)":
+          personas.reduce(
+            (total, persona) =>
+              total + (Number(persona.PrecioTotal) || 0),
+            0
+          ),
+      });
+
+      const hoja = XLSX.utils.json_to_sheet(filas);
+
+      hoja["!cols"] = [
+        { wch: 30 },
+        { wch: 24 },
+        { wch: 45 },
+        { wch: 45 },
+      ];
+
+      const libro = XLSX.utils.book_new();
+
+      XLSX.utils.book_append_sheet(
+        libro,
+        hoja,
+        "Reporte comidas"
+      );
+
+      XLSX.writeFile(
+        libro,
+        `reporte_comidas_programacion_${programacionNro}.xlsx`
+      );
+    } catch (e) {
+      setError(e.message || "Error al exportar el Excel.");
+    }
   }
 
   if (cargando && !datos) {
@@ -205,25 +286,36 @@ export default function GraficaCostos({ programacionNro }) {
           </div>
         </div>
 
-        {/* Resumen del costo total */}
-        <div className="relative min-w-0 overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 to-slate-800 px-5 py-4 text-white shadow-xl shadow-slate-900/15 sm:min-w-64">
-          <div className="pointer-events-none absolute -right-5 -top-8 size-24 rounded-full bg-teal-400/20 blur-2xl" />
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <button
+            type="button"
+            onClick={exportarExcel}
+            className="rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-emerald-700 focus:outline-none focus:ring-4 focus:ring-emerald-100"
+          >
+            Exportar Excel
+          </button>
+        
+          {/* Resumen del costo total */}
+          <div className="relative min-w-0 overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 to-slate-800 px-5 py-4 text-white shadow-xl shadow-slate-900/15 sm:min-w-64">
+            <div className="pointer-events-none absolute -right-5 -top-8 size-24 rounded-full bg-teal-400/20 blur-2xl" />
 
-          <div className="relative">
-            <span className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
-              <span className="size-2 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400" />
-              Costo total
-            </span>
+            <div className="relative">
+              <span className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
+                <span className="size-2 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400" />
+                Costo total
+              </span>
 
-            <strong className="mt-2 block break-words text-2xl font-extrabold tracking-tight tabular-nums sm:text-[1.7rem]">
-              {formatoPesos(datos.costoTotal)}
-            </strong>
+              <strong className="mt-2 block break-words text-2xl font-extrabold tracking-tight tabular-nums sm:text-[1.7rem]">
+                {formatoPesos(datos.costoTotal)}
+              </strong>
 
-            <small className="mt-1.5 block text-xs text-slate-400">
-              {formatoNumero(datos.totalPersonas)} consumos válidos
-            </small>
+              <small className="mt-1.5 block text-xs text-slate-400">
+                {formatoNumero(datos.totalPersonas)} consumos válidos
+              </small>
+            </div>
           </div>
         </div>
+
       </header>
 
       <div className="relative px-5 py-6 sm:px-7 sm:py-7">
@@ -346,7 +438,7 @@ export default function GraficaCostos({ programacionNro }) {
 
                     <div className="rounded-xl bg-white px-3 py-2.5 ring-1 ring-slate-200/70">
                       <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                        Invitados
+                        Asistentes
                       </span>
 
                       <strong className="mt-1 block text-xs font-bold tabular-nums text-slate-700 sm:text-sm">
