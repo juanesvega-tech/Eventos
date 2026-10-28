@@ -32,6 +32,7 @@ export async function obtenerReporteComidas(programacionNro) {
       SELECT
         re.RegistrosEventoNro,
         LTRIM(RTRIM(re.PersonasDocumento)) AS DocumentoPrincipal,
+        COALESCE(p.PersonasNombresComp, '') AS NombrePrincipal,
         CASE
           WHEN COALESCE(a.CantidadAcompanantes, 0) > 0
             THEN 'Sí'
@@ -41,6 +42,9 @@ export async function obtenerReporteComidas(programacionNro) {
         COALESCE(c.CantidadComidas, 0) AS CantidadComidas,
         COALESCE(c.PrecioTotal, 0) AS PrecioTotal
       FROM dbo.RegistrosEvento AS re
+      LEFT JOIN dbo.Personas AS p
+        ON LTRIM(RTRIM(p.PersonasDocumento)) =
+           LTRIM(RTRIM(re.PersonasDocumento))
       LEFT JOIN Acompanantes AS a
         ON a.RegistrosEventoNro = re.RegistrosEventoNro
       LEFT JOIN Consumos AS c
@@ -52,6 +56,7 @@ export async function obtenerReporteComidas(programacionNro) {
   return resultado.recordset.map((fila) => ({
     RegistrosEventoNro: Number(fila.RegistrosEventoNro),
     DocumentoPrincipal: fila.DocumentoPrincipal ?? "",
+    NombrePrincipal: fila.NombrePrincipal ?? "",
     VinoConAcompanante: fila.VinoConAcompanante,
     CantidadAcompanantes: Number(fila.CantidadAcompanantes),
     CantidadComidas: Number(fila.CantidadComidas),

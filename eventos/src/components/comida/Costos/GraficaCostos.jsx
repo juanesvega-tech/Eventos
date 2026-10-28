@@ -105,11 +105,11 @@ export default function GraficaCostos({ programacionNro }) {
         return;
       }
 
+      
       const filas = personas.map((persona) => ({
-        "Documento trabajador PRINCIPAL":
-          persona.DocumentoPrincipal,
-        "¿Vino con acompañante?":
-          persona.VinoConAcompanante,
+        "Nombre trabajador PRINCIPAL": persona.NombrePrincipal || "",
+        "Documento trabajador PRINCIPAL": persona.DocumentoPrincipal,
+        "¿Vino con acompañante?": persona.VinoConAcompanante,
         "Cantidad de comidas (principal + acompañantes)":
           Number(persona.CantidadComidas) || 0,
         "Precio total comidas (principal + acompañantes)":
@@ -117,6 +117,7 @@ export default function GraficaCostos({ programacionNro }) {
       }));
 
       filas.push({
+        "Nombre trabajador PRINCIPAL": "",
         "Documento trabajador PRINCIPAL": "TOTAL GENERAL",
         "¿Vino con acompañante?": "",
         "Cantidad de comidas (principal + acompañantes)":
@@ -136,11 +137,13 @@ export default function GraficaCostos({ programacionNro }) {
       const hoja = XLSX.utils.json_to_sheet(filas);
 
       hoja["!cols"] = [
+        { wch: 35 },
         { wch: 30 },
         { wch: 24 },
         { wch: 45 },
         { wch: 45 },
       ];
+
 
       const libro = XLSX.utils.book_new();
 

@@ -1,6 +1,6 @@
 
 import { NextResponse } from "next/server";
-import { obtenerConteoRegistros } from "../../../repositories/registros.repository.js";
+import { obtenerConteoRegistros } from "@/repositories/registros.repository.js";
 
 
 

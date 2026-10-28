@@ -21,224 +21,105 @@ export default function GraficaAcompanantes({
     Number(valor).toLocaleString("es-CO");
 
   return (
-    <section className="tarjeta">
-      <header className="encabezado">
-        <div>
-          <span className="etiqueta">ANÁLISIS DE ACOMPAÑANTES</span>
-          <h2>Porcentaje de acompañantes</h2>
-          <p>
-            A que tienen acompañantes registrados frente
-            a asistentes que no tienen.
+    <section className="mt-6 overflow-hidden rounded-2xl border border-gray-200 bg-white p-5 shadow-[0_3px_12px_rgba(15,23,42,0.03)] sm:p-6">
+      <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0">
+          <span className="text-[11px] font-extrabold tracking-[1.4px] text-blue-600">
+            ANÁLISIS DE ACOMPAÑANTES
+          </span>
+
+          <h2 className="my-2 text-2xl font-bold leading-tight text-gray-900">
+            Porcentaje de acompañantes
+          </h2>
+
+          <p className="text-sm leading-[1.6] text-slate-500">
+            A que tienen acompañantes registrados frente a asistentes que no
+            tienen.
           </p>
         </div>
 
-        <span className="estado">● Actualización cada 5 segundos</span>
+        <span className="flex shrink-0 items-center gap-2 text-xs text-emerald-700">
+          <span
+            className="size-2 rounded-full bg-emerald-600"
+            aria-hidden="true"
+          />
+          Actualización cada 5 segundos
+        </span>
       </header>
 
-      <div className="contenido">
+      {/* En móvil es vertical; desde md pasa a horizontal */}
+      <div className="flex flex-col items-center gap-8 py-8 md:flex-row md:justify-center md:gap-12">
         <div
-          className="grafica"
+          className="grid aspect-square w-[190px] shrink-0 place-items-center rounded-full sm:w-[210px] md:w-[230px]"
           style={{ background: gradiente }}
           role="img"
-          aria-label={`Con acompañante ${porcentajeCon.toFixed(1)} por ciento, sin acompañante ${porcentajeSin.toFixed(1)} por ciento`}
+          aria-label={`Con acompañante ${porcentajeCon.toFixed(
+            1
+          )} por ciento, sin acompañante ${porcentajeSin.toFixed(
+            1
+          )} por ciento`}
         >
-          <div className="centro">
-            <strong>{total > 0 ? "100%" : "0%"}</strong>
-            <span>Asistentes analizados</span>
+          <div className="flex aspect-square w-[120px] flex-col items-center justify-center rounded-full bg-white px-3 text-center sm:w-[132px] md:w-[145px]">
+            <strong className="text-[28px] font-bold leading-none text-blue-950 md:text-[30px]">
+              {total > 0 ? "100%" : "0%"}
+            </strong>
+
+            <span className="mt-2 text-xs leading-4 text-slate-500">
+              Asistentes analizados
+            </span>
           </div>
         </div>
 
-        <div className="leyenda">
-          <div className="item">
-            <span className="punto azul" />
-            <div>
-              <strong>Con acompañante</strong>
-              <p>{numero(conAcompanante)} asistentes</p>
+        {/* Leyenda */}
+        <div className="flex w-full min-w-0 flex-col gap-6 md:max-w-xl md:flex-1">
+          <div className="grid grid-cols-[14px_minmax(0,1fr)_auto] items-center gap-3">
+            <span
+              className="size-3.5 rounded-full bg-blue-600"
+              aria-hidden="true"
+            />
+
+            <div className="min-w-0">
+              <strong className="block text-[15px] font-bold leading-5 text-gray-800">
+                Con acompañante
+              </strong>
+
+              <p className="mt-1 text-[13px] text-slate-500">
+                {numero(conAcompanante)} asistentes
+              </p>
             </div>
-            <b>{porcentajeCon.toFixed(1)}%</b>
+
+            <b className="whitespace-nowrap text-right text-xl font-bold text-blue-700 sm:text-[22px]">
+              {porcentajeCon.toFixed(1)}%
+            </b>
           </div>
 
-          <div className="item">
-            <span className="punto gris" />
-            <div>
-              <strong>Sin acompañante</strong>
-              <p>{numero(sinAcompanante)} asistentes</p>
+          <div className="grid grid-cols-[14px_minmax(0,1fr)_auto] items-center gap-3">
+            <span
+              className="size-3.5 rounded-full bg-gray-300"
+              aria-hidden="true"
+            />
+
+            <div className="min-w-0">
+              <strong className="block text-[15px] font-bold leading-5 text-gray-800">
+                Sin acompañante
+              </strong>
+
+              <p className="mt-1 text-[13px] text-slate-500">
+                {numero(sinAcompanante)} asistentes
+              </p>
             </div>
-            <b>{porcentajeSin.toFixed(1)}%</b>
+
+            <b className="whitespace-nowrap text-right text-xl font-bold text-blue-700 sm:text-[22px]">
+              {porcentajeSin.toFixed(1)}%
+            </b>
           </div>
         </div>
       </div>
 
-      <p className="nota">
-        Los porcentajes se calculan sobre los asistentes analizados,
-        no sobre la suma de asistentes y acompañantes.
+      <p className="m-0 rounded-lg bg-blue-50 px-3.5 py-3 text-sm leading-[1.6] text-blue-700">
+        Los porcentajes se calculan sobre los asistentes analizados, no sobre la
+        suma de asistentes y acompañantes.
       </p>
-
-      <style jsx>{`
-        .tarjeta {
-          margin-top: 24px;
-          padding: 24px;
-          border: 1px solid #e5e7eb;
-          border-radius: 16px;
-          background: white;
-          box-shadow: 0 3px 12px #0f172a08;
-        }
-
-        .encabezado {
-          display: flex;
-          flex-wrap: wrap;
-          justify-content: space-between;
-          gap: 16px;
-        }
-
-        .etiqueta {
-          color: #2563eb;
-          font-size: 11px;
-          font-weight: 800;
-          letter-spacing: 1.4px;
-        }
-
-        h2 {
-          margin: 8px 0;
-          color: #111827;
-          font-size: 24px;
-        }
-
-        .encabezado p,
-        .nota {
-          color: #64748b;
-          font-size: 14px;
-          line-height: 1.6;
-        }
-
-        .estado {
-          color: #047857;
-          font-size: 12px;
-        }
-
-        .contenido {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-wrap: wrap;
-          gap: 48px;
-          padding: 32px 0;
-        }
-
-        .grafica {
-          display: grid;
-          width: 230px;
-          height: 230px;
-          flex-shrink: 0;
-          place-items: center;
-          border-radius: 50%;
-        }
-
-        .centro {
-          display: flex;
-          width: 145px;
-          height: 145px;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          border-radius: 50%;
-          background: white;
-          text-align: center;
-        }
-
-        .centro strong {
-          color: #172554;
-          font-size: 30px;
-        }
-
-        .centro span {
-          margin-top: 4px;
-          color: #64748b;
-          font-size: 12px;
-        }
-
-        .leyenda {
-          display: flex;
-          min-width: 260px;
-          flex: 1;
-          flex-direction: column;
-          gap: 24px;
-        }
-
-        .item {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-        }
-
-        .punto {
-          width: 14px;
-          height: 14px;
-          flex-shrink: 0;
-          border-radius: 50%;
-        }
-
-        .azul {
-          background: #2563eb;
-        }
-
-        .gris {
-          background: #d1d5db;
-        }
-
-        .item div {
-          flex: 1;
-        }
-
-        .item strong {
-          color: #1f2937;
-          font-size: 15px;
-        }
-
-        .item p {
-          margin: 5px 0 0;
-          color: #64748b;
-          font-size: 13px;
-        }
-
-        .item b {
-          color: #1d4ed8;
-          font-size: 22px;
-        }
-
-        .nota {
-          margin: 0;
-          padding: 12px 14px;
-          border-radius: 8px;
-          background: #eff6ff;
-          color: #1d4ed8;
-        }
-
-        @media (max-width: 600px) {
-          .tarjeta {
-            padding: 18px;
-          }
-
-          .grafica {
-            width: 190px;
-            height: 190px;
-          }
-
-          .centro {
-            width: 120px;
-            height: 120px;
-          }
-
-          .contenido {
-            gap: 28px;
-          }
-
-          .leyenda {
-            min-width: 0;
-            width: 100%;
-          }
-        }
-      `}</style>
     </section>
   );
 }
